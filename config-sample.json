@@ -10,14 +10,14 @@
     },
     "queues":
     [
-        "tasks": {
+        {
             "queueName": "Tasks",
             "maxPendingJobs": 5000,
             "minPendingJobs": 500,
             "maxConsumers": 10,
             "minConsumers": 1,
             "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$QUEUE}",
-            "queueStatusCheckDelay": 60
+            "queueStatusCheckDelay": 60,
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
             "killConsumerCommand": "/usr/bin/killWorker"
         }
