@@ -19,7 +19,7 @@
             "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$QUEUE}",
             "queueStatusCheckDelay": 60,
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
-            "killConsumerCommand": "/usr/bin/killWorker"
+            "killConsumerCmd": "/usr/bin/killWorker"
         }
     ]
 }
