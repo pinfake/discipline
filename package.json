@@ -1,0 +1,26 @@
+{
+    "author": "Iván Mota",
+        "name": "loompadiscipline",
+        "description": "Node commandline application to automatically spawn and destroy consumers of message broker's queues based on a configurable set of rules.",
+        "version": "0.0.1",
+        "repository": {
+            "url": "https://github.com/pinfake/loompadiscipline.git"
+        },
+        "main": "./lib/main",
+        "bin": {
+            "loompadiscipline": "./bin/loompadiscipline"
+        },
+        "scripts": {
+            "test": "node test/all.js"
+        },
+        "dependencies": {
+            "node-getopt": "0.2.3"
+        },
+        "devDependencies": {
+            "test": ">=0.0.5"
+        },
+        "optionalDependencies": {},
+        "engines": {
+            "node": "*"
+        }
+}
