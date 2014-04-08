@@ -21,4 +21,37 @@ describe('Config parsing', function() {
             '"queues" property is not defined'
          ); 
     });
+    it('parseConfig should throw ParseError if there are no queues defined', function() {
+        var cfg = {
+            'global': 'global',
+            'queues': { 
+            }
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            'No queues defined on the "queues" object'
+         ); 
+    });
+    it('parseConfig should throw ParseError if queues is not an object', function() {
+        var cfg = {
+            'global': 'global',
+            'queues': 'queues'
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            'No queues defined on the "queues" object'
+         ); 
+    });
+    it('parseConfig should throw ParseError if a queue doesn\'t define a queueName', function() {
+        var cfg = {
+            'global': 'global',
+            'queues': { 
+                'q1': {}
+            }
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            '"q1": "queueName" property is not defined'
+         ); 
+    });
 });
