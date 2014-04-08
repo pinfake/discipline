@@ -15,4 +15,10 @@ describe('Config parsing', function() {
             '"global" property is not defined'
          ); 
     });
+    it('parseConfig should throw ParseError on missing queues property', function() {
+        var jsonString = '{ "global": "global" }';
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            '"queues" property is not defined'
+         ); 
+    });
 });
