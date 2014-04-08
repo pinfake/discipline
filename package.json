@@ -18,10 +18,16 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "mocha": "^1.18.2"
+    "mocha": "^1.18.2",
+    "blanket": "^1.1.6"
   },
   "optionalDependencies": {},
   "engines": {
     "node": "*"
+  },
+  "config": {
+    "blanket": {
+        "pattern": "loompadiscipline/lib"
+    }
   }
 }
