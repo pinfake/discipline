@@ -9,8 +9,8 @@
         "queueStatusCheckDelay": 60
     },
     "queues":
-    [
-        {
+    {
+        "q1": {
             "queueName": "Tasks",
             "maxPendingJobs": 5000,
             "minPendingJobs": 500,
@@ -21,5 +21,5 @@
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
             "killConsumerCmd": "/usr/bin/killWorker"
         }
-    ]
+    }
 }
