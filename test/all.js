@@ -54,4 +54,33 @@ describe('Config parsing', function() {
             '"q1": "queueName" property is not defined'
          ); 
     });
+    it('parseConfig should throw ParseError if a queue doesn\'t define a spawnConsumerCmd', function() {
+        var cfg = {
+            'global': 'global',
+            'queues': { 
+                'q1': {
+                    'queueName': 'aQueue'
+                }
+            }
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            '"q1": "spawnConsumerCmd" property is not defined'
+         ); 
+    });
+    it('parseConfig should throw ParseError if a queue doesn\'t define a killConsumerCmd', function() {
+        var cfg = {
+            'global': 'global',
+            'queues': { 
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd'
+                }
+            }
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            '"q1": "killConsumerCmd" property is not defined'
+         ); 
+    });
 });
