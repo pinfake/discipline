@@ -83,4 +83,21 @@ describe('Config parsing', function() {
             '"q1": "killConsumerCmd" property is not defined'
          ); 
     });
+    it('parseConfig should throw ParseError if neither queue or global define maxPendingJobs', function() {
+        var cfg = {
+            'global': {
+            },
+            'queues': { 
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd'
+                }
+            }
+        }
+        var jsonString = JSON.stringify( cfg );
+        (function() {config.parseConfig( jsonString )}).should.throw( SyntaxError,
+            '"q1": "maxPendingJobs" property is neither defined on queue config nor in global config'
+         ); 
+    });
 });
