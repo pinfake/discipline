@@ -435,6 +435,98 @@ describe('Config parsing', function () {
             config.parseConfig(jsonString).queues.q1.minPendingJobs.should.be.equal(10);
         });
 
+        it('parseConfig should set queue "maxConsumers" from global if not defined on queue', function () {
+            var cfg = {
+                'global': {
+                    'maxConsumers': 33
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxPendingJobs': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.should.have.property('maxConsumers');
+            config.parseConfig(jsonString).queues.q1.maxConsumers.should.be.equal(33);
+        });
+
+        it('parseConfig should retain queue "maxConsumers" value from queue config if its defined on both global and queue', function () {
+            var cfg = {
+                'global': {
+                    'maxConsumer': 220
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'maxPendingJobs': 111,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.maxConsumers.should.be.equal(20);
+        });
+
+        it('parseConfig should set queue "minConsumers" from global if not defined on queue', function () {
+            var cfg = {
+                'global': {
+                    'minConsumers': 2
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'maxPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minPendingJobs': 1,
+                        'queueStatusCheckDelay': 60,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.should.have.property('minConsumers');
+            config.parseConfig(jsonString).queues.q1.minConsumers.should.be.equal(2);
+        });
+
+        it('parseConfig should retain queue "minConsumers" value from queue config if its defined on both global and queue', function () {
+            var cfg = {
+                'global': {
+                    'minConsumers': 2
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'maxPendingJobs': 111,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.minConsumers.should.be.equal(1);
+        });
+
         it('parseConfig should set queue "queueStatusCheckDelay" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
@@ -458,7 +550,7 @@ describe('Config parsing', function () {
             config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(99);
         });
 
-        it('parseConfig should retain queue "maxPendingJobs" value from queue config if its defined on both global and queue', function () {
+        it('parseConfig should retain queue "queueStatusCheckDelay" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
                     'queueStatusCheckDelay': 99
