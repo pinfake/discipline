@@ -204,4 +204,183 @@ describe('Config parsing', function () {
                 '"q1": "queueStatusCheckDelay" property is neither defined on queue config nor in global config'
             );
     });
+    it('parseConfig should throw ParseError if neither queue or global define queueStatusCmd', function () {
+        var cfg = {
+            'global': {
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'maxPendingJobs': 500,
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        (function () {
+            config.parseConfig(jsonString);
+        }).should.throw(SyntaxError,
+                '"q1": "queueStatusCmd" property is neither defined on queue config nor in global config'
+            );
+    });
+    it('parseConfig should return an Object', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).should.be.a('Object');
+    });
+
+    it('parseConfig returned Object should have the "queues" property defined', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).should.have.property('queues');
+    });
+
+    it('parseConfig returned Object "queues" property should be an object', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).queues.should.be.a('Object');
+    });
+
+    it('parseConfig returned queues config should have all queues properties defined', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).queues.should.have.property('q1');
+    });
+
+    it('parseConfig returned individual queue configs should be Objects', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).queues.q1.should.be.a('Object');
+    });
+
+    it('parseConfig should set queue "maxPendingJobs" from global if not defined on queue', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).queues.q1.should.have.property('maxPendingJobs');
+        config.parseConfig(jsonString).queues.q1.maxPendingJobs.should.be.equal(220);
+    });
+
+    it('parseConfig should retain queue "maxPendingJobs" value from queue config if its defined on both global and queue', function() {
+        var cfg = {
+            'global': {
+                'maxPendingJobs': 220
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd',
+                    'killConsumerCmd': 'killCmd',
+                    'minPendingJobs': 10,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'maxPendingJobs': 111,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+        var jsonString = JSON.stringify(cfg);
+        config.parseConfig(jsonString).queues.q1.maxPendingJobs.should.be.equal(111);
+    });
 });
