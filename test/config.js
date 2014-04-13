@@ -6,7 +6,7 @@ describe('Config parsing', function () {
     var config = new Config();
     var cfg;
 
-    beforeEach(function() {
+    beforeEach(function () {
         cfg = {
             'global': {
                 'logFile': 'discipline.log'
@@ -61,10 +61,10 @@ describe('Config parsing', function () {
         var readFileSyncStub, parseConfigStub;
 
         afterEach(function () {
-            if( readFileSyncStub ) {
+            if (readFileSyncStub) {
                 readFileSyncStub.restore();
             }
-            if( parseConfigStub ) {
+            if (parseConfigStub) {
                 parseConfigStub.restore();
             }
         });
