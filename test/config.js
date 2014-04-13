@@ -21,7 +21,7 @@ describe('Config parsing', function () {
                     'maxConsumers': 20,
                     'minConsumers': 1,
                     'queueStatusCheckDelay': 60,
-                    'queueStatusCmd': 'statusCmd'
+                    'queueStatusCmd': 'statusCmd -q {$queueName}'
                 }
             }
         };
@@ -334,7 +334,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "queueStatusCmd" value from queue config if its defined on both global and queue', function () {
             cfg.global.queueStatusCmd = 'statusCmdFromGlobal';
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd');
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd -q aQueue');
         });
     });
     describe('Variable replacing', function () {
@@ -348,6 +348,12 @@ describe('Config parsing', function () {
             'property', function () {
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.killConsumerCmd.should.be.equal('killCmd -q aQueue');
+        });
+
+        it('parseConfig should replace {$queueName} string on queue "queueStatusCmd" property with actual queueName ' +
+            'property', function () {
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd -q aQueue');
         });
     });
 });

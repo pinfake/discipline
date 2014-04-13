@@ -6,7 +6,7 @@
         "minPendingJobs": 500,
         "maxConsumers": 10,
         "minConsumers": 1,
-        "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$QUEUE}",
+        "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
         "queueStatusCheckDelay": 60
     },
     "queues":
@@ -17,8 +17,19 @@
             "minPendingJobs": 500,
             "maxConsumers": 10,
             "minConsumers": 1,
-            "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$QUEUE}",
-            "queueStatusCheckDelay": 60,
+            "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
+            "queueStatusCheckDelay": 2,
+            "spawnConsumerCmd": "/usr/bin/spawnWorker",
+            "killConsumerCmd": "/usr/bin/killWorker"
+        },
+        "q2": {
+            "queueName": "Jobs",
+            "maxPendingJobs": 5000,
+            "minPendingJobs": 500,
+            "maxConsumers": 10,
+            "minConsumers": 1,
+            "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
+            "queueStatusCheckDelay": 5,
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
             "killConsumerCmd": "/usr/bin/killWorker"
         }
