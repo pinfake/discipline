@@ -4,119 +4,51 @@ var fs = require('fs');
 describe('Config parsing', function () {
 
     var config = new Config();
+    var cfg;
+
+    beforeEach(function() {
+        cfg = {
+            'global': {
+                'logFile': 'discipline.log'
+            },
+            'queues': {
+                'q1': {
+                    'queueName': 'aQueue',
+                    'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
+                    'killConsumerCmd': 'killCmd -q {$queueName}',
+                    'minPendingJobs': 10,
+                    'maxPendingJobs': 400,
+                    'maxConsumers': 20,
+                    'minConsumers': 1,
+                    'queueStatusCheckDelay': 60,
+                    'queueStatusCmd': 'statusCmd'
+                }
+            }
+        };
+    });
 
     describe('General configuration parsing', function () {
         it('parseConfig should return an Object', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).should.be.a('Object');
         });
 
         it('parseConfig returned Object should have the "queues" property defined', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).should.have.property('queues');
         });
 
         it('parseConfig returned Object "queues" property should be an object', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.should.be.a('Object');
         });
 
         it('parseConfig returned queues config should have all queues properties defined', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.should.have.property('q1');
         });
 
         it('parseConfig returned individual queue configs should be Objects', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.be.a('Object');
         });
@@ -127,10 +59,6 @@ describe('Config parsing', function () {
         var fsError = new Error('fs error');
         var configError = new Error('config error');
         var readFileSyncStub, parseConfigStub;
-
-        beforeEach(function () {
-
-        });
 
         afterEach(function () {
             if( readFileSyncStub ) {
@@ -189,6 +117,7 @@ describe('Config parsing', function () {
                 config.parseConfig(jsonString);
             }).should.throw(SyntaxError);
         });
+
         it('parseConfig should throw SyntaxError on missing global property', function () {
             var jsonString = '{ "test": "test" }';
             (function () {
@@ -197,6 +126,7 @@ describe('Config parsing', function () {
                     '"global" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError on missing global.logFile property', function () {
             var jsonString = '{ "global": {} }';
             (function () {
@@ -205,6 +135,7 @@ describe('Config parsing', function () {
                     '"global.logFile" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError on missing queues property', function () {
             var jsonString = '{ "global": { "logFile" : "l" } }';
             (function () {
@@ -213,14 +144,9 @@ describe('Config parsing', function () {
                     '"queues" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError if there are no queues defined', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                }
-            };
+            cfg.queues = {};
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -228,13 +154,9 @@ describe('Config parsing', function () {
                     'No queues defined on the "queues" object'
                 );
         });
+
         it('parseConfig should throw SyntaxError if queues is not an object', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': 'queues'
-            };
+            cfg.queues = 'queues';
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -242,15 +164,9 @@ describe('Config parsing', function () {
                     'No queues defined on the "queues" object'
                 );
         });
+
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a queueName', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {}
-                }
-            };
+            cfg.queues.q1 = {};
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -258,17 +174,9 @@ describe('Config parsing', function () {
                     '"q1": "queueName" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a spawnConsumerCmd', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue'
-                    }
-                }
-            };
+            cfg.queues.q1.spawnConsumerCmd = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -276,18 +184,9 @@ describe('Config parsing', function () {
                     '"q1": "spawnConsumerCmd" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a killConsumerCmd', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.killConsumerCmd = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -295,19 +194,9 @@ describe('Config parsing', function () {
                     '"q1": "killConsumerCmd" property is not defined'
                 );
         });
+
         it('parseConfig should throw SyntaxError if neither queue or global define maxPendingJobs', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.maxPendingJobs = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -315,20 +204,9 @@ describe('Config parsing', function () {
                     '"q1": "maxPendingJobs" property is neither defined on queue config nor in global config'
                 );
         });
+
         it('parseConfig should throw SyntaxError if neither queue or global define minPendingJobs', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 500
-                    }
-                }
-            };
+            cfg.queues.q1.minPendingJobs = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -337,20 +215,7 @@ describe('Config parsing', function () {
                 );
         });
         it('parseConfig should throw SyntaxError if neither queue or global define maxConsumers', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 500,
-                        'minPendingJobs': 10
-                    }
-                }
-            };
+            cfg.queues.q1.maxConsumers = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -359,21 +224,7 @@ describe('Config parsing', function () {
                 );
         });
         it('parseConfig should throw SyntaxError if neither queue or global define minConsumers', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 500,
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20
-                    }
-                }
-            };
+            cfg.queues.q1.minConsumers = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -382,22 +233,7 @@ describe('Config parsing', function () {
                 );
         });
         it('parseConfig should throw SyntaxError if neither queue or global define queueStatusCheckDelay', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 500,
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1
-                    }
-                }
-            };
+            cfg.queues.q1.queueStatusCheckDelay = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -406,23 +242,7 @@ describe('Config parsing', function () {
                 );
         });
         it('parseConfig should throw SyntaxError if neither queue or global define queueStatusCmd', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 500,
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60
-                    }
-                }
-            };
+            cfg.queues.q1.queueStatusCmd = undefined;
             var jsonString = JSON.stringify(cfg);
             (function () {
                 config.parseConfig(jsonString);
@@ -434,289 +254,85 @@ describe('Config parsing', function () {
 
     describe('Inheritance from global config', function () {
         it('parseConfig should set queue "maxPendingJobs" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.maxPendingJobs = undefined;
+            cfg.global.maxPendingJobs = 220;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('maxPendingJobs');
             config.parseConfig(jsonString).queues.q1.maxPendingJobs.should.be.equal(220);
         });
 
         it('parseConfig should retain queue "maxPendingJobs" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxPendingJobs': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.maxPendingJobs = 220;
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.maxPendingJobs.should.be.equal(111);
+            config.parseConfig(jsonString).queues.q1.maxPendingJobs.should.be.equal(400);
         });
 
         it('parseConfig should set queue "minPendingJobs" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'minPendingJobs': 2
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.minPendingJobs = undefined;
+            cfg.global.minPendingJobs = 93;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('minPendingJobs');
-            config.parseConfig(jsonString).queues.q1.minPendingJobs.should.be.equal(2);
+            config.parseConfig(jsonString).queues.q1.minPendingJobs.should.be.equal(93);
         });
 
         it('parseConfig should retain queue "minPendingJobs" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'minPendingJobs': 2
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.minPendingJobs = 93;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.minPendingJobs.should.be.equal(10);
         });
 
         it('parseConfig should set queue "maxConsumers" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxConsumers': 33
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxPendingJobs': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.maxConsumers = undefined;
+            cfg.global.maxConsumers = 21;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('maxConsumers');
-            config.parseConfig(jsonString).queues.q1.maxConsumers.should.be.equal(33);
+            config.parseConfig(jsonString).queues.q1.maxConsumers.should.be.equal(21);
         });
 
         it('parseConfig should retain queue "maxConsumers" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'maxConsumer': 220
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.maxConsumers = 24;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.maxConsumers.should.be.equal(20);
         });
 
         it('parseConfig should set queue "minConsumers" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'minConsumers': 2
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'maxPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minPendingJobs': 1,
-                        'queueStatusCheckDelay': 60,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.minConsumers = undefined;
+            cfg.global.minConsumers = 88;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('minConsumers');
-            config.parseConfig(jsonString).queues.q1.minConsumers.should.be.equal(2);
+            config.parseConfig(jsonString).queues.q1.minConsumers.should.be.equal(88);
         });
 
         it('parseConfig should retain queue "minConsumers" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'minConsumers': 2
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.minConsumers = 24;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.minConsumers.should.be.equal(1);
         });
 
         it('parseConfig should set queue "queueStatusCheckDelay" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'queueStatusCheckDelay': 99
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxPendingJobs': 800,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.queues.q1.queueStatusCheckDelay = undefined;
+            cfg.global.queueStatusCheckDelay = 88;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('queueStatusCheckDelay');
-            config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(99);
+            config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(88);
         });
 
         it('parseConfig should retain queue "queueStatusCheckDelay" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'queueStatusCheckDelay': 99
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.queueStatusCheckDelay = 24;
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(60);
         });
 
         it('parseConfig should set queue "queueStatusCmd" from global if not defined on queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'queueStatusCmd': 'statusCmdFromGlobal'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxPendingJobs': 800,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60
-                    }
-                }
-            };
+            cfg.queues.q1.queueStatusCmd = undefined;
+            cfg.global.queueStatusCmd = 'statusCmdFromGlobal';
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('queueStatusCmd');
             config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmdFromGlobal');
         });
 
         it('parseConfig should retain queue "queueStatusCmd" value from queue config if its defined on both global and queue', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l',
-                    'queueStatusCmd': 'statusCmdFromGlobal'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
+            cfg.global.queueStatusCmd = 'statusCmdFromGlobal';
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd');
         });
@@ -724,48 +340,12 @@ describe('Config parsing', function () {
     describe('Variable replacing', function () {
         it('parseConfig should replace {$queueName} string on queue "spawnConsumerCmd" property with actual queueName ' +
             'property', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
-                        'killConsumerCmd': 'killCmd',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.spawnConsumerCmd.should.be.equal('spawnCmd -q aQueue');
         });
 
         it('parseConfig should replace {$queueName} string on queue "killConsumerCmd" property with actual queueName ' +
             'property', function () {
-            var cfg = {
-                'global': {
-                    'logFile': 'l'
-                },
-                'queues': {
-                    'q1': {
-                        'queueName': 'aQueue',
-                        'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
-                        'killConsumerCmd': 'killCmd -q {$queueName}',
-                        'minPendingJobs': 10,
-                        'maxConsumers': 20,
-                        'minConsumers': 1,
-                        'queueStatusCheckDelay': 60,
-                        'maxPendingJobs': 111,
-                        'queueStatusCmd': 'statusCmd'
-                    }
-                }
-            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.killConsumerCmd.should.be.equal('killCmd -q aQueue');
         });
