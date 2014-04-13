@@ -9,6 +9,7 @@ describe('Config parsing', function () {
         it('parseConfig should return an Object', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -31,6 +32,7 @@ describe('Config parsing', function () {
         it('parseConfig returned Object should have the "queues" property defined', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -53,6 +55,7 @@ describe('Config parsing', function () {
         it('parseConfig returned Object "queues" property should be an object', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -75,6 +78,7 @@ describe('Config parsing', function () {
         it('parseConfig returned queues config should have all queues properties defined', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -97,6 +101,7 @@ describe('Config parsing', function () {
         it('parseConfig returned individual queue configs should be Objects', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -192,8 +197,16 @@ describe('Config parsing', function () {
                     '"global" property is not defined'
                 );
         });
+        it('parseConfig should throw SyntaxError on missing global.logFile property', function () {
+            var jsonString = '{ "global": {} }';
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"global.logFile" property is not defined'
+                );
+        });
         it('parseConfig should throw SyntaxError on missing queues property', function () {
-            var jsonString = '{ "global": "global" }';
+            var jsonString = '{ "global": { "logFile" : "l" } }';
             (function () {
                 config.parseConfig(jsonString);
             }).should.throw(SyntaxError,
@@ -202,7 +215,9 @@ describe('Config parsing', function () {
         });
         it('parseConfig should throw SyntaxError if there are no queues defined', function () {
             var cfg = {
-                'global': 'global',
+                'global': {
+                    'logFile': 'l'
+                },
                 'queues': {
                 }
             };
@@ -215,7 +230,9 @@ describe('Config parsing', function () {
         });
         it('parseConfig should throw SyntaxError if queues is not an object', function () {
             var cfg = {
-                'global': 'global',
+                'global': {
+                    'logFile': 'l'
+                },
                 'queues': 'queues'
             };
             var jsonString = JSON.stringify(cfg);
@@ -227,7 +244,9 @@ describe('Config parsing', function () {
         });
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a queueName', function () {
             var cfg = {
-                'global': 'global',
+                'global': {
+                    'logFile': 'l'
+                },
                 'queues': {
                     'q1': {}
                 }
@@ -241,7 +260,9 @@ describe('Config parsing', function () {
         });
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a spawnConsumerCmd', function () {
             var cfg = {
-                'global': 'global',
+                'global': {
+                    'logFile': 'l'
+                },
                 'queues': {
                     'q1': {
                         'queueName': 'aQueue'
@@ -257,7 +278,9 @@ describe('Config parsing', function () {
         });
         it('parseConfig should throw SyntaxError if a queue doesn\'t define a killConsumerCmd', function () {
             var cfg = {
-                'global': 'global',
+                'global': {
+                    'logFile': 'l'
+                },
                 'queues': {
                     'q1': {
                         'queueName': 'aQueue',
@@ -275,6 +298,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define maxPendingJobs', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -294,6 +318,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define minPendingJobs', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -314,6 +339,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define maxConsumers', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -335,6 +361,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define minConsumers', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -357,6 +384,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define queueStatusCheckDelay', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -380,6 +408,7 @@ describe('Config parsing', function () {
         it('parseConfig should throw SyntaxError if neither queue or global define queueStatusCmd', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -407,6 +436,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "maxPendingJobs" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -430,6 +460,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "maxPendingJobs" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxPendingJobs': 220
                 },
                 'queues': {
@@ -453,6 +484,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "minPendingJobs" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'minPendingJobs': 2
                 },
                 'queues': {
@@ -476,6 +508,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "minPendingJobs" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'minPendingJobs': 2
                 },
                 'queues': {
@@ -499,6 +532,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "maxConsumers" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxConsumers': 33
                 },
                 'queues': {
@@ -522,6 +556,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "maxConsumers" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'maxConsumer': 220
                 },
                 'queues': {
@@ -545,6 +580,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "minConsumers" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'minConsumers': 2
                 },
                 'queues': {
@@ -568,6 +604,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "minConsumers" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'minConsumers': 2
                 },
                 'queues': {
@@ -591,6 +628,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "queueStatusCheckDelay" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'queueStatusCheckDelay': 99
                 },
                 'queues': {
@@ -614,6 +652,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "queueStatusCheckDelay" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'queueStatusCheckDelay': 99
                 },
                 'queues': {
@@ -637,6 +676,7 @@ describe('Config parsing', function () {
         it('parseConfig should set queue "queueStatusCmd" from global if not defined on queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'queueStatusCmd': 'statusCmdFromGlobal'
                 },
                 'queues': {
@@ -660,6 +700,7 @@ describe('Config parsing', function () {
         it('parseConfig should retain queue "queueStatusCmd" value from queue config if its defined on both global and queue', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l',
                     'queueStatusCmd': 'statusCmdFromGlobal'
                 },
                 'queues': {
@@ -685,6 +726,7 @@ describe('Config parsing', function () {
             'property', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {
@@ -708,6 +750,7 @@ describe('Config parsing', function () {
             'property', function () {
             var cfg = {
                 'global': {
+                    'logFile': 'l'
                 },
                 'queues': {
                     'q1': {

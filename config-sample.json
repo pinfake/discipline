@@ -1,6 +1,7 @@
 {
     "global": 
     {
+        "logFile": "discipline.log",
         "maxPendingJobs": 5000,
         "minPendingJobs": 500,
         "maxConsumers": 10,

@@ -15,7 +15,9 @@
     },
     "dependencies": {
         "node-getopt": "^0.2.3",
-        "shell": "^0.3.2"
+        "shell": "^0.3.2",
+        "daemon": "^1.1.0",
+        "winston": "^0.7.3"
     },
     "devDependencies": {
         "chai": "^1.9.1",
