@@ -633,6 +633,52 @@ describe('Config parsing', function () {
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(60);
         });
+
+        it('parseConfig should set queue "queueStatusCmd" from global if not defined on queue', function () {
+            var cfg = {
+                'global': {
+                    'queueStatusCmd': 'statusCmdFromGlobal'
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxPendingJobs': 800,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.should.have.property('queueStatusCmd');
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmdFromGlobal');
+        });
+
+        it('parseConfig should retain queue "queueStatusCmd" value from queue config if its defined on both global and queue', function () {
+            var cfg = {
+                'global': {
+                    'queueStatusCmd': 'statusCmdFromGlobal'
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'maxPendingJobs': 111,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd');
+        });
     });
     describe('Variable replacing', function () {
         it('parseConfig should replace {$queueName} string on queue "spawnConsumerCmd" property with actual queueName ' +

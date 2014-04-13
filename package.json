@@ -14,7 +14,8 @@
         "test": "make test"
     },
     "dependencies": {
-        "node-getopt": "^0.2.3"
+        "node-getopt": "^0.2.3",
+        "shell": "^0.3.2"
     },
     "devDependencies": {
         "chai": "^1.9.1",
