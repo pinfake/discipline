@@ -1,10 +1,11 @@
 var Config = require('../lib/config.js');
-
+var sinon = require('sinon');
+var fs = require('fs');
 describe('Config parsing', function () {
 
     var config = new Config();
 
-    describe('General', function () {
+    describe('General configuration parsing', function () {
         it('parseConfig should return an Object', function () {
             var cfg = {
                 'global': {
@@ -114,6 +115,66 @@ describe('Config parsing', function () {
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.be.a('Object');
         });
+    });
+
+    describe('Config file parsing', function () {
+        var pathname = './config.js';
+        var fsError = new Error('fs error');
+        var configError = new Error('config error');
+        var readFileSyncStub, parseConfigStub;
+
+        beforeEach(function () {
+
+        });
+
+        afterEach(function () {
+            if( readFileSyncStub ) {
+                readFileSyncStub.restore();
+            }
+            if( parseConfigStub ) {
+                parseConfigStub.restore();
+            }
+        });
+
+        it('parseConfigFile should throw fs.readFileSync exceptions out', function () {
+            readFileSyncStub = sinon.stub(fs, 'readFileSync', function () {
+                throw fsError;
+            });
+            (function () {
+                config.parseConfigFile(pathname);
+            }).should.throw(Error, 'fs error');
+            readFileSyncStub.should.have.been.calledWith(pathname, {encoding: 'utf8'});
+        });
+
+        it('parseConfigFile should throw parseConfig exceptions out', function () {
+            var returnedConfig = '{"global": {}}';
+            readFileSyncStub = sinon.stub(fs, 'readFileSync', function () {
+                return(returnedConfig);
+            });
+            parseConfigStub = sinon.stub(config, 'parseConfig', function () {
+                throw configError;
+            });
+
+            (function () {
+                config.parseConfigFile(pathname);
+            }).should.throw(Error, configError.message);
+            readFileSyncStub.should.have.been.calledWith(pathname, {encoding: 'utf8'});
+            parseConfigStub.should.have.been.calledWith(returnedConfig);
+        });
+
+        it('parseConfigFile should call fs.readFileSync on argument and should call parseConfig with file contents',
+            function () {
+                var returnedConfig = '{"global": {}}';
+                readFileSyncStub = sinon.stub(fs, 'readFileSync', function () {
+                    return(returnedConfig);
+                });
+                parseConfigStub = sinon.stub(config, 'parseConfig');
+
+                config.parseConfigFile(pathname);
+                readFileSyncStub.should.have.been.calledWith(pathname, {encoding: 'utf8'});
+                parseConfigStub.should.have.been.calledWith(returnedConfig);
+            }
+        );
     });
 
     describe('Error parsing', function () {
@@ -571,6 +632,53 @@ describe('Config parsing', function () {
             };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.queueStatusCheckDelay.should.be.equal(60);
+        });
+    });
+    describe('Variable replacing', function () {
+        it('parseConfig should replace {$queueName} string on queue "spawnConsumerCmd" property with actual queueName ' +
+            'property', function () {
+            var cfg = {
+                'global': {
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
+                        'killConsumerCmd': 'killCmd',
+                        'minPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'maxPendingJobs': 111,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.spawnConsumerCmd.should.be.equal('spawnCmd -q aQueue');
+        });
+
+        it('parseConfig should replace {$queueName} string on queue "killConsumerCmd" property with actual queueName ' +
+            'property', function () {
+            var cfg = {
+                'global': {
+                },
+                'queues': {
+                    'q1': {
+                        'queueName': 'aQueue',
+                        'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
+                        'killConsumerCmd': 'killCmd -q {$queueName}',
+                        'minPendingJobs': 10,
+                        'maxConsumers': 20,
+                        'minConsumers': 1,
+                        'queueStatusCheckDelay': 60,
+                        'maxPendingJobs': 111,
+                        'queueStatusCmd': 'statusCmd'
+                    }
+                }
+            };
+            var jsonString = JSON.stringify(cfg);
+            config.parseConfig(jsonString).queues.q1.killConsumerCmd.should.be.equal('killCmd -q aQueue');
         });
     });
 });

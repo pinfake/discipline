@@ -1,33 +1,35 @@
 {
-  "author": "Iván Mota",
-  "name": "loompadiscipline",
-  "description": "Node commandline application to automatically spawn and destroy consumers of message broker's queues based on a configurable set of rules.",
-  "version": "0.0.1",
-  "repository": {
-    "url": "https://github.com/pinfake/loompadiscipline.git"
-  },
-  "main": "./lib/main",
-  "bin": {
-    "loompadiscipline": "./bin/loompadiscipline"
-  },
-  "scripts": {
-    "test": "make test"
-  },
-  "dependencies": {
-    "node-getopt": "0.2.3"
-  },
-  "devDependencies": {
-    "chai": "^1.9.1",
-    "mocha": "^1.18.2",
-    "blanket": "^1.1.6"
-  },
-  "optionalDependencies": {},
-  "engines": {
-    "node": "*"
-  },
-  "config": {
-    "blanket": {
-        "pattern": "loompadiscipline/lib"
+    "author": "Iván Mota",
+    "name": "loompadiscipline",
+    "description": "Node commandline application to automatically spawn and destroy consumers of message broker's queues based on a configurable set of rules.",
+    "version": "0.0.1",
+    "repository": {
+        "url": "https://github.com/pinfake/loompadiscipline.git"
+    },
+    "main": "./lib/main",
+    "bin": {
+        "loompadiscipline": "./bin/loompadiscipline"
+    },
+    "scripts": {
+        "test": "make test"
+    },
+    "dependencies": {
+        "node-getopt": "^0.2.3"
+    },
+    "devDependencies": {
+        "chai": "^1.9.1",
+        "mocha": "^1.18.2",
+        "sinon": "^1.9.1",
+        "sinon-chai": "2.5.0",
+        "blanket": "^1.1.6"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    },
+    "config": {
+        "blanket": {
+            "pattern": "loompadiscipline/lib"
+        }
     }
-  }
 }
