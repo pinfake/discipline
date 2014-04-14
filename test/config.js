@@ -1,11 +1,10 @@
-var Config = require('../lib/config.js');
+var config = require('../lib/config.js');
 var sinon = require('sinon');
 var fs = require('fs');
 
 describe('Config parsing', function () {
 
     var cfg;
-    var config = Config();
 
     beforeEach(function () {
         cfg = {
