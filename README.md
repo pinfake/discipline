@@ -1,6 +1,6 @@
 discipline
 ================
-[![Build Status](https://travis-ci.org/pinfake/loompadiscipline.svg?branch=master)](https://travis-ci.org/pinfake/loompadiscipline)
+[![Build Status](https://travis-ci.org/pinfake/discipline.svg?branch=master)](https://travis-ci.org/pinfake/discipline)
 Description
 -----------
 
