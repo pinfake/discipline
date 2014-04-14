@@ -8,7 +8,7 @@
     },
     "main": "./lib/main",
     "bin": {
-        "loompadiscipline": "./bin/loompadiscipline"
+        "loompadiscipline": "./bin/discipline"
     },
     "scripts": {
         "test": "make test"
@@ -29,6 +29,9 @@
     "optionalDependencies": {},
     "engines": {
         "node": "*"
+    },
+    "jshintConfig": {
+        "node": true
     },
     "config": {
         "blanket": {
