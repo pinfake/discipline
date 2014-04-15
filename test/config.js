@@ -2,6 +2,8 @@ var config = require('../lib/config.js');
 var sinon = require('sinon');
 var fs = require('fs');
 
+// TODO: Check that commands are strings!, we cant use "replace" otherwise = Evil unhandled exception
+
 describe('Config parsing', function () {
 
     var cfg;

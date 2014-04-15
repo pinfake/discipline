@@ -1,0 +1,36 @@
+{
+    "global": 
+    {
+        "logFile": "discipline.log",
+        "maxPendingJobs": 5000,
+        "minPendingJobs": 500,
+        "maxConsumers": 10,
+        "minConsumers": 1,
+        "queueStatusCmd": "/home/pin/devel/projects/amqpchanstat/bin/amqpchanstat -u amqp://localhost -q {$queueName}",
+        "queueStatusCheckDelay": 60
+    },
+    "queues":
+    {
+        "q1": {
+            "queueName": "Tasks",
+            "maxPendingJobs": 5000,
+            "minPendingJobs": 500,
+            "maxConsumers": 10,
+            "minConsumers": 1,
+
+            "queueStatusCheckDelay": 2,
+            "spawnConsumerCmd": "/usr/bin/spawnWorker",
+            "killConsumerCmd": "/usr/bin/killWorker"
+        },
+        "q2": {
+            "queueName": "Jobs",
+            "maxPendingJobs": 5000,
+            "minPendingJobs": 500,
+            "maxConsumers": 10,
+            "minConsumers": 1,
+            "queueStatusCheckDelay": 5,
+            "spawnConsumerCmd": "/usr/bin/spawnWorker",
+            "killConsumerCmd": "/usr/bin/killWorker"
+        }
+    }
+}
