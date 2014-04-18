@@ -12,7 +12,7 @@
     "queues":
     {
         "q1": {
-            "queueName": "Tasks",
+            "queueName": "tasks",
             "maxPendingJobs": 5000,
             "minPendingJobs": 500,
             "maxConsumers": 10,
