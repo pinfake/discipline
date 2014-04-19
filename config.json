@@ -28,21 +28,6 @@
             "killConsumerCmd": {
                 "cmd": "/usr/bin/killWorker"
             }
-        },
-        "q2": {
-            "logFile": "discipline-q2.log",
-            "queueName": "Jobs",
-            "maxPendingJobs": 5000,
-            "minPendingJobs": 500,
-            "maxConsumers": 10,
-            "minConsumers": 1,
-            "queueStatusCheckDelay": 5,
-            "spawnConsumerCmd": {
-                "cmd": "/usr/bin/spawnWorker"
-            },
-            "killConsumerCmd": {
-                "cmd": "/usr/bin/killWorker"
-            }
         }
     }
 }
