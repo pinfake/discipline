@@ -6,12 +6,15 @@
         "minPendingJobs": 500,
         "maxConsumers": 10,
         "minConsumers": 1,
-        "queueStatusCmd": "/home/pin/devel/projects/amqpchanstat/bin/amqpchanstat -u amqp://localhost -q {$queueName}",
+        "queueStatusCmd": {
+            "cmd": "/home/pin/devel/projects/amqpchanstat/bin/amqpchanstat -u amqp://localhost -q {$queueName}"
+        },
         "queueStatusCheckDelay": 60
     },
     "queues":
     {
         "q1": {
+            "logFile": "discipline-q1.log",
             "queueName": "tasks",
             "maxPendingJobs": 5000,
             "minPendingJobs": 500,
@@ -19,18 +22,27 @@
             "minConsumers": 1,
 
             "queueStatusCheckDelay": 2,
-            "spawnConsumerCmd": "/usr/bin/spawnWorker",
-            "killConsumerCmd": "/usr/bin/killWorker"
+            "spawnConsumerCmd": {
+                "cmd": "/usr/bin/spawnWorker"
+            },
+            "killConsumerCmd": {
+                "cmd": "/usr/bin/killWorker"
+            }
         },
         "q2": {
+            "logFile": "discipline-q2.log",
             "queueName": "Jobs",
             "maxPendingJobs": 5000,
             "minPendingJobs": 500,
             "maxConsumers": 10,
             "minConsumers": 1,
             "queueStatusCheckDelay": 5,
-            "spawnConsumerCmd": "/usr/bin/spawnWorker",
-            "killConsumerCmd": "/usr/bin/killWorker"
+            "spawnConsumerCmd": {
+                "cmd": "/usr/bin/spawnWorker"
+            },
+            "killConsumerCmd": {
+                "cmd": "/usr/bin/killWorker"
+            }
         }
     }
 }

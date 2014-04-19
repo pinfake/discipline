@@ -16,14 +16,22 @@ describe('Config parsing', function () {
             'queues': {
                 'q1': {
                     'queueName': 'aQueue',
-                    'spawnConsumerCmd': 'spawnCmd -q {$queueName}',
-                    'killConsumerCmd': 'killCmd -q {$queueName}',
+                    'spawnConsumerCmd': {
+                        cmd: 'spawnCmd -q {$queueName}'
+                    },
+                    'killConsumerCmd': {
+                        cmd: 'killCmd -q {$queueName}'
+                    },
                     'minPendingJobs': 10,
                     'maxPendingJobs': 400,
                     'maxConsumers': 20,
                     'minConsumers': 1,
                     'queueStatusCheckDelay': 60,
-                    'queueStatusCmd': 'statusCmd -q {$queueName}'
+                    'queueStatusCmd': {
+                        'timeout': 60000,
+                        'cwd': '/home/pin',
+                        'cmd': 'statusCmd -q {$queueName}'
+                    }
                 }
             }
         };
@@ -252,6 +260,81 @@ describe('Config parsing', function () {
                     '"q1": "queueStatusCmd" property is neither defined on queue config nor in global config'
                 );
         });
+        it('parseConfig should throw SyntaxError if queues queueStatusCmd property is not an object', function () {
+            cfg.queues.q1.queueStatusCmd = 'hello';
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "queueStatusCmd" property is not an Object'
+                );
+        });
+        it('parseConfig should throw SyntaxError if queues queueStatusCmd.cmd property is not a string', function () {
+            cfg.queues.q1.queueStatusCmd.cmd = {};
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "queueStatusCmd.cmd" property is either undefined or not a String'
+                );
+        });
+        it('parseConfig should throw SyntaxError if global queueStatusCmd property is defined '+
+           'and is not an object', function () {
+            cfg.global.queueStatusCmd = 'hello';
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"queueStatusCmd" property is not an Object'
+                );
+        });
+        it('parseConfig should throw SyntaxError if global queueStatusCmd.cmd property is not a string', function () {
+            cfg.global.queueStatusCmd = {
+                cmd: {}
+            };
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"queueStatusCmd.cmd" property is either undefined or not a String'
+                );
+        });
+        it('parseConfig should throw SyntaxError if queues killConsumerCmd property is not an object', function () {
+            cfg.queues.q1.killConsumerCmd = 'hello';
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "killConsumerCmd" property is not an Object'
+                );
+        });
+        it('parseConfig should throw SyntaxError if queues killConsumerCmd.cmd property is not a string', function () {
+            cfg.queues.q1.killConsumerCmd.cmd = {};
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "killConsumerCmd.cmd" property is either undefined or not a String'
+                );
+        });
+        it('parseConfig should throw SyntaxError if queues spawnConsumerCmd property is not an object', function () {
+            cfg.queues.q1.spawnConsumerCmd = 'hello';
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "spawnConsumerCmd" property is not an Object'
+                );
+        });
+        it('parseConfig should throw SyntaxError if queues spawnConsumerCmd.cmd property is not a string', function () {
+            cfg.queues.q1.spawnConsumerCmd.cmd = {};
+            var jsonString = JSON.stringify(cfg);
+            (function () {
+                config.parseConfig(jsonString);
+            }).should.throw(SyntaxError,
+                    '"q1": "spawnConsumerCmd.cmd" property is either undefined or not a String'
+                );
+        });
     });
 
     describe('Inheritance from global config', function () {
@@ -327,35 +410,40 @@ describe('Config parsing', function () {
 
         it('parseConfig should set queue "queueStatusCmd" from global if not defined on queue', function () {
             cfg.queues.q1.queueStatusCmd = undefined;
-            cfg.global.queueStatusCmd = 'statusCmdFromGlobal';
+            cfg.global.queueStatusCmd = {
+                cmd: 'statusCmdFromGlobal'
+            };
             var jsonString = JSON.stringify(cfg);
             config.parseConfig(jsonString).queues.q1.should.have.property('queueStatusCmd');
-            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmdFromGlobal');
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.eql(cfg.global.queueStatusCmd);
         });
 
         it('parseConfig should retain queue "queueStatusCmd" value from queue config if its defined on both global and queue', function () {
-            cfg.global.queueStatusCmd = 'statusCmdFromGlobal';
+            cfg.global.queueStatusCmd = {
+                cmd: 'statusCmdFromGlobal'
+            };
+            cfg.queues.q1.queueStatusCmd.cmd = 'aCmd';
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd -q aQueue');
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.eql(cfg.queues.q1.queueStatusCmd);
         });
     });
     describe('Variable replacing', function () {
-        it('parseConfig should replace {$queueName} string on queue "spawnConsumerCmd" property with actual queueName ' +
+        it('parseConfig should replace {$queueName} string on queue "spawnConsumerCmd.cmd" property with actual queueName ' +
             'property', function () {
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.spawnConsumerCmd.should.be.equal('spawnCmd -q aQueue');
+            config.parseConfig(jsonString).queues.q1.spawnConsumerCmd.cmd.should.be.equal('spawnCmd -q aQueue');
         });
 
-        it('parseConfig should replace {$queueName} string on queue "killConsumerCmd" property with actual queueName ' +
+        it('parseConfig should replace {$queueName} string on queue "killConsumerCmd.cmd" property with actual queueName ' +
             'property', function () {
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.killConsumerCmd.should.be.equal('killCmd -q aQueue');
+            config.parseConfig(jsonString).queues.q1.killConsumerCmd.cmd.should.be.equal('killCmd -q aQueue');
         });
 
-        it('parseConfig should replace {$queueName} string on queue "queueStatusCmd" property with actual queueName ' +
+        it('parseConfig should replace {$queueName} string on queue "queueStatusCmd.cmd" property with actual queueName ' +
             'property', function () {
             var jsonString = JSON.stringify(cfg);
-            config.parseConfig(jsonString).queues.q1.queueStatusCmd.should.be.equal('statusCmd -q aQueue');
+            config.parseConfig(jsonString).queues.q1.queueStatusCmd.cmd.should.be.equal('statusCmd -q aQueue');
         });
     });
 });

@@ -6,7 +6,11 @@
         "minPendingJobs": 500,
         "maxConsumers": 10,
         "minConsumers": 1,
-        "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
+        "queueStatusCmd": {
+            "timeout": 60000,
+            "cwd": "/home/pin",
+            "cmd": "/usr/bin/chanstat amqp://localhost {$queueName}"
+        },
         "queueStatusCheckDelay": 60
     },
     "queues":
@@ -17,7 +21,11 @@
             "minPendingJobs": 500,
             "maxConsumers": 10,
             "minConsumers": 1,
-            "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
+            "queueStatusCmd": {
+                "timeout": 60000,
+                "cwd": "/home/pin",
+                "cmd": "/usr/bin/chanstat amqp://localhost {$queueName}"
+            },
             "queueStatusCheckDelay": 2,
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
             "killConsumerCmd": "/usr/bin/killWorker"
@@ -28,7 +36,11 @@
             "minPendingJobs": 500,
             "maxConsumers": 10,
             "minConsumers": 1,
-            "queueStatusCmd": "/usr/bin/chanstat amqp://localhost {$queueName}",
+            "queueStatusCmd": {
+                "timeout": 60000,
+                "cwd": "/home/pin",
+                "cmd": "/usr/bin/chanstat amqp://localhost {$queueName}"
+            },
             "queueStatusCheckDelay": 5,
             "spawnConsumerCmd": "/usr/bin/spawnWorker",
             "killConsumerCmd": "/usr/bin/killWorker"
